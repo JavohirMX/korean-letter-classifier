@@ -125,6 +125,7 @@ with gr.Blocks(title="Korean Handwritten Letter Classifier") as demo:
     
     with gr.Row():
         with gr.Column():
+            gr.Markdown("### Option 1: Draw")
             # Drawing canvas
             canvas = gr.Sketchpad(
                 label="Draw a Korean Letter Here",
@@ -136,7 +137,17 @@ with gr.Blocks(title="Korean Handwritten Letter Classifier") as demo:
             
             with gr.Row():
                 clear_btn = gr.Button("Clear Canvas", variant="secondary")
-                predict_btn = gr.Button("Predict", variant="primary")
+                predict_canvas_btn = gr.Button("Predict from Canvas", variant="primary")
+            
+            gr.Markdown("---")
+            gr.Markdown("### Option 2: Upload Image")
+            # Image upload
+            upload_image = gr.Image(
+                label="Upload an Image of a Korean Letter",
+                type="pil",
+                image_mode="L"
+            )
+            predict_upload_btn = gr.Button("Predict from Upload", variant="primary")
         
         with gr.Column():
             # Prediction output
@@ -153,8 +164,11 @@ with gr.Blocks(title="Korean Handwritten Letter Classifier") as demo:
             )
     
     # Event handlers
-    predict_btn.click(fn=predict, inputs=canvas, outputs=output)
-    canvas.change(fn=predict, inputs=canvas, outputs=output)  # Real-time prediction
+    predict_canvas_btn.click(fn=predict, inputs=canvas, outputs=output)
+    predict_upload_btn.click(fn=predict, inputs=upload_image, outputs=output)
+    canvas.change(fn=predict, inputs=canvas, outputs=output)  # Real-time prediction for canvas
+    upload_image.change(fn=predict, inputs=upload_image, outputs=output)  # Real-time prediction for upload
+    
     # Clear the sketch by returning an empty PIL image matching the canvas size
     def clear_canvas():
         # Return a blank white image in 'L' mode so the Sketchpad is simply cleared
